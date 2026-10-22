@@ -1,4 +1,4 @@
-name: Renderizar Reels MP4
+name: Renderizar OnNews MP4
 on:
   workflow_dispatch:
   push:
@@ -6,29 +6,29 @@ on:
     paths:
       - 'src/**'
       - 'package.json'
+      - 'scripts/**'
       - '.github/workflows/render.yml'
 permissions:
   contents: read
 jobs:
   render:
     runs-on: ubuntu-latest
-    timeout-minutes: 25
+    timeout-minutes: 30
     steps:
-      - name: Baixar codigo
-        uses: actions/checkout@v4
-      - name: Instalar Node
-        uses: actions/setup-node@v4
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Instalar dependencias
-        run: npm install --no-audit --no-fund
-      - name: Instalar Chromium
-        run: npx remotion browser ensure
-      - name: Renderizar MP4
+      - run: npm install --no-audit --no-fund
+      - name: Install speech synthesis and sound tools
+        run: sudo apt-get update && sudo apt-get install -y espeak-ng ffmpeg
+      - name: Generate narration and original news-style audio
+        run: bash scripts/audio.sh
+      - run: npx remotion browser ensure
+      - name: Render 60-second video
         run: npm run render
-      - name: Publicar MP4
-        uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v4
         with:
-          name: reels-onvideo-mp4
+          name: onnews-60s-mp4
           path: out/video.mp4
           retention-days: 7
