@@ -1,32 +1,16 @@
 import React from 'react';
-import {AbsoluteFill, Composition, interpolate, registerRoot, useCurrentFrame} from 'remotion';
-const scenes=[
-{duration:90,tag:'EDIÇÃO • 22 OUT 2026',title:'O DIA EM\n30 SEGUNDOS',body:'IA, dinheiro e Brasil.\nVeja o que está em destaque.',source:'GIRO DO DIA',accent:'#ffcc00'},
-{duration:240,tag:'01 / EMPREGO + IA',title:'CERCA DE\n5 MIL CORTES',body:'Barclays anuncia redução de empregos\nem iniciativa de corte de custos\nimpulsionada por inteligência artificial.',source:'Reuters / UOL • 22/10/2026',accent:'#ffcc00'},
-{duration:210,tag:'02 / MERCADO GLOBAL',title:'ÁSIA FECHA\nEM QUEDA',body:'Bolsas asiáticas recuam com\npetróleo em alta e preocupações\nsobre inteligência artificial.',source:'UOL Economia • 22/10/2026',accent:'#59d9ff'},
-{duration:240,tag:'03 / BRASIL',title:'R$ 90 BILHÕES\nEM NEGOCIAÇÃO?',body:'Ministro prevê renegociar esse valor\nna terceira fase do Desenrola.\nÉ uma previsão, não um resultado.',source:'Agência Brasil • 21/10/2026',accent:'#7df5b2'},
-{duration:120,tag:'AGORA É COM VOCÊ',title:'QUAL NOTÍCIA\nTE IMPACTA?',body:'Comente e compartilhe\ncom quem precisa saber.',source:'GIRO DO DIA • 22/10/2026',accent:'#ffcc00'}
-];
-const Video:React.FC=()=>{
-const frame=useCurrentFrame();
-let start=0;let i=0;
-for(;i<scenes.length-1;i++){if(frame<start+scenes[i].duration)break;start+=scenes[i].duration;}
-const s=scenes[i];const local=frame-start;
-const fade=interpolate(local,[0,10,s.duration-8,s.duration],[0,1,1,0],{extrapolateLeft:'clamp',extrapolateRight:'clamp'});
-const lift=interpolate(local,[0,16],[65,0],{extrapolateRight:'clamp'});
-return <AbsoluteFill style={{background:'#0b1020',color:'#fff',fontFamily:'Arial,sans-serif',overflow:'hidden'}}>
-<AbsoluteFill style={{background:'radial-gradient(circle at 90% 20%, #243253, transparent 65%)'}}/>
-<div style={{position:'absolute',right:-170,top:300+Math.sin(frame/40)*40,width:500,height:500,border:'2px solid '+s.accent,borderRadius:'50%',opacity:0.2}}/>
-<div style={{position:'absolute',top:155,left:85,fontSize:32,fontWeight:800,letterSpacing:5,color:s.accent}}>GIRO DO DIA</div>
-<div style={{position:'absolute',top:355,left:85,right:85,opacity:fade,transform:`translateY(${lift}px)`}}>
-<div style={{fontSize:28,letterSpacing:3,color:s.accent,marginBottom:48}}>{s.tag}</div>
-<div style={{fontSize:90,fontWeight:900,lineHeight:1.08,whiteSpace:'pre-line',letterSpacing:-3}}>{s.title}</div>
-<div style={{width:110,height:9,background:s.accent,marginTop:48,marginBottom:48}}/>
-<div style={{fontSize:43,lineHeight:1.48,whiteSpace:'pre-line',color:'#e1e6f1'}}>{s.body}</div>
+import {AbsoluteFill, Audio, Composition, interpolate, registerRoot, useCurrentFrame, staticFile} from 'remotion';
+const segments=[{"start":0,"end":6,"title":"ONNEWS","subtitle":"O Brasil em 60 segundos","caption":"OnNews. As notícias que impactam o Brasil, em um minuto."},{"start":6,"end":17,"title":"ELEIÇÕES 2026","subtitle":"Orientações do TSE ao eleitor","caption":"Na reta final das eleições de dois mil e vinte e seis, o Tribunal Superior Eleitoral amplia orientações sobre votação e serviços digitais ao eleitor."},{"start":17,"end":27,"title":"ECONOMIA • MEI","subtitle":"Lei sancionada muda dívidas e limite","caption":"Na economia, foi sancionada uma lei que perdoa dívidas e amplia o limite para microempreendedores individuais. Confira os critérios antes de tomar decisões."},{"start":27,"end":37,"title":"TARIFA ZERO","subtitle":"Proposta segue para análise no Congresso","caption":"O governo também enviou ao Congresso uma proposta de tarifa zero no transporte coletivo. A medida ainda depende de análise legislativa."},{"start":37,"end":48,"title":"CLIMA E DEFESA CIVIL","subtitle":"Chuvas e crédito extraordinário","caption":"Na área climática, chuvas ganham força em regiões do país. A Defesa Civil recebeu crédito extraordinário de trezentos milhões de reais."},{"start":48,"end":56,"title":"ENERGIA E EL NIÑO","subtitle":"Torres de transmissão afetadas","caption":"E na infraestrutura, eventos extremos associados ao El Niño causaram a queda de mais de duzentas e noventa torres de energia desde julho."},{"start":56,"end":60,"title":"ONNEWS","subtitle":"Informação com contexto","caption":"Esses foram os destaques. OnNews: informação com contexto, todos os dias."}];
+const Video:React.FC=()=>{const frame=useCurrentFrame();const seconds=frame/30;const seg=segments.find(s=>seconds>=s.start&&seconds<s.end)||segments[segments.length-1];const local=(seconds-seg.start);const fade=interpolate(local,[0,.45],[0,1],{extrapolateRight:'clamp'});return <AbsoluteFill style={{background:'linear-gradient(140deg,#080f20,#152f4c 60%,#08101e)',color:'white',fontFamily:'Arial,sans-serif'}}>
+<div style={{position:'absolute',top:100,left:70,fontWeight:900,fontSize:62,color:'#ffffff'}}>ON<span style={{color:'#ff284f'}}>NEWS</span></div>
+<div style={{position:'absolute',top:215,left:70,fontSize:30,letterSpacing:3}}>BRASIL • 22 OUTUBRO 2026</div>
+<div style={{position:'absolute',top:520,left:70,right:70,opacity:fade}}>
+<div style={{background:'#ed234b',display:'inline-block',padding:'12px 24px',fontSize:30,fontWeight:800}}>ÚLTIMAS NOTÍCIAS</div>
+<div style={{fontSize:91,fontWeight:900,marginTop:55,lineHeight:1.03}}>{seg.title}</div>
+<div style={{fontSize:42,marginTop:55,color:'#dce7f6',lineHeight:1.3}}>{seg.subtitle}</div>
 </div>
-<div style={{position:'absolute',bottom:290,left:85,right:85,fontSize:25,color:'#aab6cf'}}>{s.source}</div>
-<div style={{position:'absolute',bottom:230,left:85,right:85,height:7,background:'#ffffff20'}}><div style={{width:`${frame/899*100}%`,height:'100%',background:s.accent}}/></div>
-<div style={{position:'absolute',bottom:175,left:85,fontSize:25,color:'#aab6cf'}}>RESUMO INFORMATIVO</div>
-<div style={{position:'absolute',bottom:175,right:85,fontSize:25,color:s.accent}}>{Math.max(0,30-Math.floor(frame/30))}s</div>
-</AbsoluteFill>};
-registerRoot(()=> <Composition id="OnVideo" component={Video} durationInFrames={900} fps={30} width={1080} height={1920}/>);
+<div style={{position:'absolute',bottom:260,left:50,right:50,background:'#020815dd',padding:24,borderLeft:'8px solid #f32952',fontSize:30,lineHeight:1.3}}>{seg.caption}</div>
+<div style={{position:'absolute',bottom:105,left:70,right:70,height:9,background:'#ffffff33'}}><div style={{width:`${(frame/1800)*100}%`,height:'100%',background:'#f32952'}}/></div>
+<div style={{position:'absolute',bottom:48,left:70,fontSize:22}}>FONTES: AGÊNCIA BRASIL • TSE • FOLHA</div>
+<Audio src={staticFile('voice.mp3')}/><Audio src={staticFile('bed.wav')} volume={0.12}/>
+</AbsoluteFill>};registerRoot(()=> <Composition id="OnVideo" component={Video} durationInFrames={1800} fps={30} width={1080} height={1920}/>);
