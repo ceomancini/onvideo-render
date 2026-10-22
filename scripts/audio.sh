@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+set -euo pipefail
+mkdir -p public
+espeak-ng -v pt-br -s 164 -p 43 -w public/voice.wav "On News. As noticias que impactam o Brasil, em um minuto. Na reta final das eleicoes de dois mil e vinte e seis, o Tribunal Superior Eleitoral amplia orientacoes sobre votacao e servicos digitais ao eleitor. Na economia, foi sancionada uma lei que perdoa dividas e amplia o limite para microempreendedores individuais. Confira os criterios antes de tomar decisoes. O governo tambem enviou ao Congresso uma proposta de tarifa zero no transporte coletivo. A medida ainda depende de analise legislativa. Na area climatica, chuvas ganham forca em regioes do pais. A Defesa Civil recebeu credito extraordinario de trezentos milhoes de reais. E na infraestrutura, eventos extremos associados ao El Nino causaram a queda de mais de duzentas e noventa torres de energia desde julho. Esses foram os destaques. On News: informacao com contexto, todos os dias."
+ffmpeg -y -i public/voice.wav -af "atempo=1.18,apad=pad_dur=60,atrim=0:60" -c:a libmp3lame -q:a 3 public/voice.mp3
+ffmpeg -y -f lavfi -i "sine=frequency=110:duration=60" -f lavfi -i "sine=frequency=164.81:duration=60" -filter_complex "[0:a]volume=0.06[a];[1:a]volume=0.035[b];[a][b]amix=inputs=2:duration=first,afade=t=in:st=0:d=2,afade=t=out:st=58:d=2[out]" -map "[out]" -c:a pcm_s16le public/bed.wav
