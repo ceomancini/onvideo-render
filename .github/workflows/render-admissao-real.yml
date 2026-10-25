@@ -1,0 +1,32 @@
+name: Mangueira de admissao - fotos reais
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'products/admissao-real/**'
+      - '.github/workflows/render-admissao-real.yml'
+permissions:
+  contents: read
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    defaults:
+      run:
+        working-directory: products/admissao-real
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm install --no-audit --no-fund
+      - run: npx remotion browser ensure
+      - run: npx remotion still index.tsx AdmissaoReal out/preview.png --frame=450
+      - run: npx remotion render index.tsx AdmissaoReal out/cooper-mangueira-admissao.mp4 --codec=h264 --pixel-format=yuv420p
+      - uses: actions/upload-artifact@v4
+        with:
+          name: cooper-admissao-real-mp4
+          path: products/admissao-real/out/
+          if-no-files-found: error
+          retention-days: 30
