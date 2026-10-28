@@ -1,0 +1,28 @@
+name: Junta 22441 23800 - video 15 segundos
+on:
+  push:
+    branches: [main]
+    paths: ['products/junta-2244123800/**', '.github/workflows/render-junta.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: sudo apt-get update -qq && sudo apt-get install -y ffmpeg fonts-dejavu-core
+      - run: pip install numpy pillow scipy
+      - run: cat products/junta-2244123800/source.part.* > products/junta-2244123800/source.mp4
+      - run: python products/junta-2244123800/render.py
+      - uses: actions/upload-artifact@v4
+        with:
+          name: junta-22441-23800-15s
+          path: |
+            products/junta-2244123800/junta-22441-23800-15s.mp4
+            products/junta-2244123800/preview-*.jpg
+          retention-days: 30
