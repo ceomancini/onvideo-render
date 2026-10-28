@@ -37,7 +37,7 @@ def extract(a):
  labs,n=ndi.label(dark);sizes=np.bincount(labs.ravel());sizes[0]=0
  keep=np.zeros_like(dark)
  for j in np.argsort(sizes)[-5:]:
-  if sizes[j]>90:keep|=labs==j
+  if sizes[j]>90 and np.where(labs==j)[0].min()<600:keep|=labs==j
  alpha=ndi.gaussian_filter(keep.astype(float),.65)
  # neutralize reflected green while retaining the real product's highlights
  lum=a.mean(axis=2);rgb=np.stack([lum*.92,lum*.96,lum],axis=2).clip(0,255).astype('uint8')
